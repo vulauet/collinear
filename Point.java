@@ -50,9 +50,9 @@ public class Point implements Comparable<Point> {
     /**
      * Returns the slope between this point and the specified point.
      * Formally, if the two points are (x0, y0) and (x1, y1), then the slope
-     * is (y1 - y0) / (x1 - x0). For completness, the slope is defined to be
+     * is (y1 - y0) / (x1 - x0). For completeness, the slope is defined to be
      * +0.0 if the line segment connecting the two points is horizontal;
-     * Double.POSITIVE_INFINITY if the line segment is vertcal;
+     * Double.POSITIVE_INFINITY if the line segment is vertical;
      * and Double.NEGATIVE_INFINITY if (x0, y0) and (x1, y1) are equal.
      *
      * @param  that the other point
@@ -60,13 +60,11 @@ public class Point implements Comparable<Point> {
      */
     public double slopeTo(Point that) {
         /* YOUR CODE HERE */
-        
         if (this.x == that.x) {
-         if (this.y == that.y) return Double.NEGATIVE_INFINITY;
-         return Double.POSITIVE_INFINITY;   
-        }
-        else if (this.y == that.y) return +0.0;
-        else return (this.y - that.y) / (this.x - that.x);
+            if (this.y == that.y) return Double.NEGATIVE_INFINITY;
+            return Double.POSITIVE_INFINITY;
+        } else if (this.y == that.y) return +0.0;
+        else return (this.y - that.y)/(this.x - that.x);
     }
 
     /**
@@ -101,10 +99,10 @@ public class Point implements Comparable<Point> {
     public Comparator<Point> slopeOrder() {
         /* YOUR CODE HERE */
         return new Comparator<Point>() {
-            public int compare(Point p1, Point p2) {
-                if (Point.this.slopeTo(p1)>Point.this.slopeTo(p2)) return 1;
-                else if (Point.this.slopeTo(p1)==Point.this.slopeTo(p2)) return 0;
-                else return -1;
+            public int compare(Point p0, Point p1) {
+                double s0 = slopeTo(p0);
+                double s1 = slopeTo(p1);
+                return Double.compare(s0, s1);
             }
         };
     }

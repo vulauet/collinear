@@ -3,7 +3,7 @@
  *  Execution:    none
  *  Dependencies: Point.java
  *
- *  An immutable datat ype for Line segments in the plane.
+ *  An immutable data type for Line segments in the plane.
  *  For use on Coursera, Algorithms Part I programming assignment.
  *
  *  DO NOT MODIFY THIS CODE.
@@ -53,7 +53,7 @@ public class LineSegment {
      * Throws an exception if called. The hashCode() method is not supported because
      * hashing has not yet been introduced in this course. Moreover, hashing does not
      * typically lead to good *worst-case* performance guarantees, as required on this
-     * asssignment.
+     * assignment.
      *
      * @throws UnsupportedOperationException if called
      */
