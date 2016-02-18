@@ -8,29 +8,41 @@ public class BruteCollinearPoints {
 	private LineSegment[] ls;
 	private int numSegments;
 
+	private void sort(Point[] points) {
+		for (int i=0; i<points.length-1; i++) {
+			for (int j=i+1; j<points.length; j++) {
+				if (points[i].compareTo(points[j]) < 0) {
+					Point tmp = points[i];
+					points[i] = points[j];
+					points[j] = tmp;
+				}
+			}
+		}
+	}
+
 	public BruteCollinearPoints(Point[] points)    // finds all line segments containing 4 points
 	{
 		if (points == null) throw new NullPointerException("Argument to the constructor is null");
 		int size = points.length;
-		System.out.println(size);
 		numSegments = 0;
-		//ls = new LineSegment[size*(size-1)/6+1];
-		ls = new LineSegment[size*size*size*size];
-		for (int i=0; i<size; i++) if (points[i] == null) throw new NullPointerException("Invalid point");
+		LineSegment[] tmpLS = new LineSegment[size*(size-1)/6+1];
+		for (int k=0; k<size; k++) if (points[k] == null) throw new NullPointerException("Invalid point");
+		sort(points);
 		for (int i=0; i<size-3; i++) {
 			for (int j=i+1; j<size-2; j++) {
 				for (int p=j+1; p<size-1; p++) {
 					if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[p])) {
 						for (int q=p+1; q<size; q++) {
-							if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[q]) && !Arrays.asList(ls).contains(new LineSegment(points[p], points[q])))
-								ls[numSegments++] = new LineSegment(points[p], points[q]);
-							else if (Arrays.asList(ls).contains(new LineSegment(points[p], points[q])))
-								System.out.println("existed");
+							if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[q])) {
+								tmpLS[numSegments++] = new LineSegment(points[i], points[q]);
+							}
 						}
 					}
 				}
 			}
 		}
+		ls = new LineSegment[numSegments];
+		for (int i=0; i<numSegments; i++) ls[i] = tmpLS[i];
 	}
 
 	public           int numberOfSegments() { return numSegments; }        // the number of line segments
