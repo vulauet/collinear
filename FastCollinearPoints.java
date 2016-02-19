@@ -1,15 +1,39 @@
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
+import java.util.Arrays;
 
 public class FastCollinearPoints {
 	private LineSegment[] ls;
-	public FastCollinearPoints(Point[] points) {}    // finds all line segments containing 4 or more points
-	public           int numberOfSegments() {return 0;}       // the number of line segments
-	public LineSegment[] segments() 					// the line segments
+	private int numSegments;
+
+	public FastCollinearPoints(Point[] points)     // finds all line segments containing 4 or more points
 	{
-		return ls;
-	}               
+		if (points == null) throw new NullPointerException("Argument to the constructor is null");
+		int size = points.length;
+		numSegments = 0;
+		LineSegment[] tmpLS = new LineSegment[size*(size-1)/6+1];
+		for (int k=0; k<size; k++) if (points[k] == null) throw new NullPointerException("Invalid point");
+		Point[] newPoints = points.clone();
+		for (Point p : points) {
+			Arrays.sort(newPoints, p.slopeOrder());
+			for (int i = size-1; i>1; i--) {
+				// System.out.print(i + " ");
+				if (p.slopeTo(newPoints[i]) == p.slopeTo(newPoints[i-2])) {
+					tmpLS[numSegments++] = new LineSegment(p, newPoints[i]);
+					int j = i-2;
+					while (p.slopeTo(newPoints[j-1]) == p.slopeTo(points[i])) j--;
+					i = j;
+				} 
+			}
+		//	newPoints = ArrayUtils.removeElement(newPoints, p);
+		}
+		ls = new LineSegment[numSegments];
+		for (int i=0; i<numSegments; i++) ls[i] = tmpLS[i];
+	}
+
+	public int numberOfSegments() { return numSegments; }       // the number of line segments
+	public LineSegment[] segments() { return ls; }					// the line segments               
 
 	public static void main(String[] args) {
 

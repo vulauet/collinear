@@ -24,17 +24,24 @@ public class BruteCollinearPoints {
 	{
 		if (points == null) throw new NullPointerException("Argument to the constructor is null");
 		int size = points.length;
+		if (points[size-1] == null) throw new NullPointerException("Invalid point");
+		for (int k=0; k<size-1; k++) {
+			if (points[k] == null) throw new NullPointerException("Invalid point");
+			for (int f=k+1; f<size; f++) {
+				if (points[k].compareTo(points[f]) == 0) throw new IllegalArgumentException("Duplicate point");
+			} 
+		}
 		numSegments = 0;
 		LineSegment[] tmpLS = new LineSegment[size*(size-1)/6+1];
-		for (int k=0; k<size; k++) if (points[k] == null) throw new NullPointerException("Invalid point");
-		sort(points);
+		Point[] newPoints = Arrays.copyOf(points, size);
+		sort(newPoints);
 		for (int i=0; i<size-3; i++) {
 			for (int j=i+1; j<size-2; j++) {
 				for (int p=j+1; p<size-1; p++) {
-					if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[p])) {
+					if (newPoints[i].slopeTo(newPoints[j]) == newPoints[i].slopeTo(newPoints[p])) {
 						for (int q=p+1; q<size; q++) {
-							if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[q])) {
-								tmpLS[numSegments++] = new LineSegment(points[i], points[q]);
+							if (newPoints[i].slopeTo(newPoints[j]) == newPoints[i].slopeTo(newPoints[q])) {
+								tmpLS[numSegments++] = new LineSegment(newPoints[i], newPoints[q]);
 							}
 						}
 					}
