@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.Arrays;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.In;
@@ -32,8 +31,10 @@ public class BruteCollinearPoints {
 			} 
 		}
 		numSegments = 0;
-		LineSegment[] tmpLS = new LineSegment[size*(size-1)/6+1];
-		Point[] newPoints = Arrays.copyOf(points, size);
+		LineSegment[] tmpLS = new LineSegment[size*(size-1)/12+1];
+//		Point[] newPoints = Arrays.copyOf(points, size);
+		Point[] newPoints = new Point[size];
+		for (int i=0; i<size; i++) newPoints[i] = points[i];
 		sort(newPoints);
 		for (int i=0; i<size-3; i++) {
 			for (int j=i+1; j<size-2; j++) {

@@ -19,15 +19,20 @@ public class FastCollinearPoints {
 		}
 	}
 
-	private boolean existed(LineSegment[] ls, Point a, Point b) {
-		LineSegment ls1 = new LineSegment(a, b);
-		LineSegment ls2 = new LineSegment(b, a);
-		for (LineSegment l : ls) {
-			if (l != null) {
-				if (l.toString().equals(ls1.toString())) return true;
-				if (l.toString().equals(ls2.toString())) return true;
-			}
-		}
+	// private boolean existed(LineSegment[] ls, Point a, Point b) {
+	// 	LineSegment ls1 = new LineSegment(a, b);
+	// 	LineSegment ls2 = new LineSegment(b, a);
+	// 	for (LineSegment l : ls) {
+	// 		if (l != null) {
+	// 			if (l.toString().equals(ls1.toString())) return true;
+	// 			if (l.toString().equals(ls2.toString())) return true;
+	// 		}
+	// 	}
+	// 	return false;
+	// }
+
+	private boolean existed(Point[] points, int current, double slope) {
+		for (int i = 0; i < current; i++) if (points[i].slopeTo(points[current]) == slope) return true;
 		return false;
 	}
 
@@ -36,30 +41,34 @@ public class FastCollinearPoints {
 		if (points == null) throw new NullPointerException("Argument to the constructor is null");
 		int size = points.length;
 		if (points[size-1] == null) throw new NullPointerException("Invalid point");
-		for (int k=0; k<size-1; k++) {
+		for (int k = 0; k < size-1; k++) {
 			if (points[k] == null) throw new NullPointerException("Invalid point");
-			for (int f=k+1; f<size; f++) {
+			for (int f = k+1; f < size; f++) {
 				if (points[k].compareTo(points[f]) == 0) throw new IllegalArgumentException("Duplicate point");
 			} 
 		}
 		numSegments = 0;
-		LineSegment[] tmpLS = new LineSegment[size*(size-1)/6+1];
-		LineSegment[] endLS = new LineSegment[size*(size-1)/6+1]; 
-		Point[] tmpPoints = Arrays.copyOf(points, size);
+		LineSegment[] tmpLS = new LineSegment[size*(size-1)/12+1];
+		// LineSegment[] endLS = new LineSegment[size*(size-1)/12+1]; 
+		//Point[] tmpPoints = Arrays.copyOf(points, size);
+		Point[] tmpPoints = new Point[size];
+		for (int i=0; i<size; i++) tmpPoints[i] = points[i];
 		Point[] newPoints = new Point[size];
 		sort(tmpPoints);
-		for (int k=0; k<size-3; k++) {
+		for (int k = 0; k < size-3; k++) {
 			Point p = tmpPoints[k];	
-			newPoints = Arrays.copyOf(tmpPoints, size);
+			for (int i = 0; i < size; i++) newPoints[i] = tmpPoints[i];
 			Arrays.sort(newPoints, k+1, size, p.slopeOrder());
 			for (int i = size-1; i>k+2; i--) {
 				if (p.slopeTo(newPoints[i]) == p.slopeTo(newPoints[i-2])) {
-					if (!existed(endLS, newPoints[i-1], newPoints[i])) {
-						endLS[numSegments] = new LineSegment(newPoints[i-1], newPoints[i]);
+					// if (!existed(endLS, newPoints[i-1], newPoints[i])) {
+					double st = p.slopeTo(newPoints[i]);
+					if (!existed(newPoints, k, st)) {
+						// endLS[numSegments] = new LineSegment(newPoints[i-1], newPoints[i]);
 						tmpLS[numSegments++] = new LineSegment(p, newPoints[i]);
 					}
 					int j = i-2;
-					while (p.slopeTo(newPoints[j-1]) == p.slopeTo(newPoints[i])) j--;
+					while (p.slopeTo(newPoints[j-1]) == st) j--;
 					i = j;
 				}
 			}
