@@ -7,32 +7,13 @@ public class FastCollinearPoints {
 	private LineSegment[] ls;
 	private int numSegments;
 
-	private void sort(Point[] points) {
-		for (int i=0; i<points.length-1; i++) {
-			for (int j=i+1; j<points.length; j++) {
-				if (points[i].compareTo(points[j]) < 0) {
-					Point tmp = points[i];
-					points[i] = points[j];
-					points[j] = tmp;
-				}
-			}
-		}
-	}
-
-	// private boolean existed(LineSegment[] ls, Point a, Point b) {
-	// 	LineSegment ls1 = new LineSegment(a, b);
-	// 	LineSegment ls2 = new LineSegment(b, a);
-	// 	for (LineSegment l : ls) {
-	// 		if (l != null) {
-	// 			if (l.toString().equals(ls1.toString())) return true;
-	// 			if (l.toString().equals(ls2.toString())) return true;
-	// 		}
-	// 	}
+	// private boolean existed(Point[] points, int current, double slope) {
+	// 	for (int i = 0; i < current; i++) if (points[i].slopeTo(points[current]) == slope) return true;
 	// 	return false;
 	// }
 
-	private boolean existed(Point[] points, int current, double slope) {
-		for (int i = 0; i < current; i++) if (points[i].slopeTo(points[current]) == slope) return true;
+	private boolean existed(double[] slope, int current, int index) {
+		for (int i = 0; i < current; i++) if (slope[i] == slope[index]) return true;
 		return false;
 	}
 
@@ -49,36 +30,59 @@ public class FastCollinearPoints {
 		}
 		numSegments = 0;
 		LineSegment[] tmpLS = new LineSegment[size*(size-1)/12+1];
-		// LineSegment[] endLS = new LineSegment[size*(size-1)/12+1]; 
-		//Point[] tmpPoints = Arrays.copyOf(points, size);
 		Point[] tmpPoints = new Point[size];
 		for (int i=0; i<size; i++) tmpPoints[i] = points[i];
 		Point[] newPoints = new Point[size];
-		sort(tmpPoints);
+		Arrays.sort(tmpPoints);
+		double[] slope = new double[size];
 		for (int k = 0; k < size-3; k++) {
 			Point p = tmpPoints[k];	
 			for (int i = 0; i < size; i++) newPoints[i] = tmpPoints[i];
 			Arrays.sort(newPoints, k+1, size, p.slopeOrder());
-			for (int i = size-1; i>k+2; i--) {
-				if (p.slopeTo(newPoints[i]) == p.slopeTo(newPoints[i-2])) {
-					// if (!existed(endLS, newPoints[i-1], newPoints[i])) {
-					double st = p.slopeTo(newPoints[i]);
-					if (!existed(newPoints, k, st)) {
-						// endLS[numSegments] = new LineSegment(newPoints[i-1], newPoints[i]);
-						tmpLS[numSegments++] = new LineSegment(p, newPoints[i]);
-					}
-					int j = i-2;
-					while (p.slopeTo(newPoints[j-1]) == st) j--;
+
+			for (int i = 0; i < size; i++) slope[i] = p.slopeTo(newPoints[i]);
+			for (int i = size-1; i > k+2; i--) {
+				if (slope[i] == slope[i-2]) {
+					if (!existed(slope, k, i)) tmpLS[numSegments++] = new LineSegment(p, newPoints[i]);
+					int j =  i - 2;
+					while (slope[j-1] == slope[i]) j--;
 					i = j;
 				}
 			}
+
+			// for (int i = 0; i < size-k-1; i++) slope[i] = p.slopeTo(newPoints[k+i+1]);
+			// for (int i = size-k-2; i >= 2; i--) {
+			// 	if (slope[i] == slope[i-2]) {
+			// 		if (!existed(newPoints, k, slope[i])) tmpLS[numSegments++] = new LineSegment(p, newPoints[k+i+1]);
+			// 		int j = i - 2;
+			// 		while (j > 0 && slope[j-1] == slope[i]) j--;
+			// 		i = j;
+			// 	}
+			// }
+
+			// for (int i = size-1; i>k+2; i--) {
+			// 	if (p.slopeTo(newPoints[i]) == p.slopeTo(newPoints[i-2])) {
+			// 		double st = p.slopeTo(newPoints[i]);
+			// 		if (!existed(newPoints, k, st)) 
+			// 			tmpLS[numSegments++] = new LineSegment(p, newPoints[i]);
+			// 		int j = i-2;
+			// 		while (p.slopeTo(newPoints[j-1]) == st) j--;
+			// 		i = j;
+			// 	}
+			// }
 		}
 		ls = new LineSegment[numSegments];
 		for (int i=0; i<numSegments; i++) ls[i] = tmpLS[i];
+		// System.out.println(numSegments + " " + size);
 	}
 
 	public int numberOfSegments() { return numSegments; }       // the number of line segments
-	public LineSegment[] segments() { return ls; }					// the line segments               
+	public LineSegment[] segments() 					// the line segments               
+	{
+		LineSegment[] newLS = new LineSegment[numSegments];
+		for (int i = 0; i < numSegments; i++) newLS[i] = ls[i]; 
+		return newLS; 
+	}
 
 	public static void main(String[] args) {
 

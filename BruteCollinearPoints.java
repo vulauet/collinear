@@ -54,8 +54,13 @@ public class BruteCollinearPoints {
 	}
 
 	public           int numberOfSegments() { return numSegments; }        // the number of line segments
-	public LineSegment[] segments() { return ls; }               // the line segments
-
+	public LineSegment[] segments() 					// the line segments               
+	{
+		LineSegment[] newLS = new LineSegment[numSegments];
+		for (int i = 0; i < numSegments; i++) newLS[i] = ls[i]; 
+		return newLS; 
+	}
+	
 	public static void main(String[] args) {
 
 	    // read the N points from a file
